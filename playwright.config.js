@@ -1,5 +1,8 @@
 const path = require('path')
 const { defineConfig } = require('@playwright/test')
+const { loadEnvFiles } = require('./tools/github/shared.js')
+
+loadEnvFiles()
 
 const storageState = process.env.GITHUB_STORAGE_STATE
   ? path.resolve(process.env.GITHUB_STORAGE_STATE)

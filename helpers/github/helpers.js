@@ -1,7 +1,8 @@
+const { expect } = require('@playwright/test')
 const hlpPW = require('../pw/helpers.js')
 
 // These helpers intentionally target the candidate's own temporary GitHub repository.
-const getRequiredEnv = (name) => {
+function getRequiredEnv(name) {
   const value = process.env[name]
 
   if (!value) throw new Error(`Missing required env var: ${name}`)
@@ -9,18 +10,22 @@ const getRequiredEnv = (name) => {
   return value
 }
 
-const getRepoContext = () => ({
-  owner: getRequiredEnv('GITHUB_OWNER'),
-  repo: getRequiredEnv('GITHUB_REPO'),
-})
+function getRepoContext() {
+  return {
+    owner: getRequiredEnv('GITHUB_OWNER'),
+    repo: getRequiredEnv('GITHUB_REPO'),
+  }
+}
 
-const getAuthHeaders = () => ({
-  Accept: 'application/vnd.github+json',
-  Authorization: `Bearer ${getRequiredEnv('GITHUB_TOKEN')}`,
-  'X-GitHub-Api-Version': '2026-03-10',
-})
+function getAuthHeaders() {
+  return {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${getRequiredEnv('GITHUB_TOKEN')}`,
+    'X-GitHub-Api-Version': '2026-03-10',
+  }
+}
 
-const _getIssuePayload = async (data = {}) => {
+async function _getIssuePayload(data = {}) {
   const suffix = await hlpPW.getRandomLetters(8)
 
   return {
@@ -29,48 +34,65 @@ const _getIssuePayload = async (data = {}) => {
   }
 }
 
-const _getIssueCreated = async (request, data = {}) => {
-  void request
-  void data
-
-  throw new Error('TODO: implement _getIssueCreated using POST /repos/{owner}/{repo}/issues on your own temporary repository')
+async function _getIssueCreated(request, data = {}) {
+  const { owner, repo } = getRepoContext()
+  const payload = await _getIssuePayload(data)
+  const response = await request.post(
+    `https://api.github.com/repos/${owner}/${repo}/issues`,
+    { headers: getAuthHeaders(), data: payload }
+  )
+  expect(response.ok()).toBeTruthy()
+  return response.json()
 }
 
-const _getIssueData = async (request, issueNumber) => {
-  void request
-  void issueNumber
-
-  throw new Error('TODO: implement _getIssueData using GET /repos/{owner}/{repo}/issues/{issue_number} on your own temporary repository')
+async function _getIssueData(request, issueNumber) {
+  const { owner, repo } = getRepoContext()
+  const response = await request.get(
+    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
+    { headers: getAuthHeaders() }
+  )
+  expect(response.ok()).toBeTruthy()
+  return response.json()
 }
 
-const _updateIssue = async (request, issueNumber, data) => {
-  void request
-  void issueNumber
-  void data
-
-  throw new Error('TODO: implement _updateIssue using PATCH /repos/{owner}/{repo}/issues/{issue_number}')
+async function _updateIssue(request, issueNumber, data) {
+  const { owner, repo } = getRepoContext()
+  const response = await request.patch(
+    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
+    { headers: getAuthHeaders(), data }
+  )
+  expect(response.ok()).toBeTruthy()
+  return response.json()
 }
 
-const _getIssueComments = async (request, issueNumber) => {
-  void request
-  void issueNumber
-
-  throw new Error('TODO: implement _getIssueComments using GET /repos/{owner}/{repo}/issues/{issue_number}/comments')
+async function _getIssueComments(request, issueNumber) {
+  const { owner, repo } = getRepoContext()
+  const response = await request.get(
+    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+    { headers: getAuthHeaders() }
+  )
+  expect(response.ok()).toBeTruthy()
+  return response.json()
 }
 
-const _addIssueComment = async (request, issueNumber, body) => {
-  void request
-  void issueNumber
-  void body
-
-  throw new Error('TODO: implement _addIssueComment using POST /repos/{owner}/{repo}/issues/{issue_number}/comments')
+async function _addIssueComment(request, issueNumber, body) {
+  const { owner, repo } = getRepoContext()
+  const response = await request.post(
+    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+    { headers: getAuthHeaders(), data: { body } }
+  )
+  expect(response.ok()).toBeTruthy()
+  return response.json()
 }
 
-const _closeIssue = async (request, issueNumber) => {
-  void request
-  void issueNumber
-
-  throw new Error('TODO: implement _closeIssue using PATCH /repos/{owner}/{repo}/issues/{issue_number} with state=closed for cleanup')
+async function _closeIssue(request, issueNumber) {
+  const { owner, repo } = getRepoContext()
+  const response = await request.patch(
+    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
+    { headers: getAuthHeaders(), data: { state: 'closed' } }
+  )
+  expect(response.ok()).toBeTruthy()
+  return response.json()
 }
 
 module.exports = {
