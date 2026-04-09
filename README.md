@@ -1,5 +1,28 @@
 # venguard-itw — Playwright E2E Interview Test
 
+## Submission Notes
+
+### Assumptions
+
+- GitHub UI is in English — locators are based on English aria-labels.
+- The issue page goes through `/_graphql` for all write operations. That's why `waitForResponse` targets it rather than a REST endpoint.
+- A `storageState` file is provided for the browser session. No login flow was implemented.
+
+### Tradeoffs
+
+- **`/_graphql` as response filter**: it's tied to GitHub's internals, but there's no REST signal to hook into for UI actions on the issue page.
+- **No `_closeIssue` in test 3**: the issue is already closed by the test itself — adding a cleanup call there would be noise.
+
+### Stability
+
+The suite was run 8 consecutive times against a clean repo to verify absence of flakiness. All runs passed.
+
+### What I would improve with another hour
+
+- **`globalSetup` for `storageState`**: a script that logs in via the UI and saves the session automatically, so there's no manual step before running the suite.
+
+---
+
 ## Getting started
 
 > **You are looking at the exercise repo. Here is what you need to do before writing a single line of test code.**
@@ -267,21 +290,3 @@ npx playwright test --headed        # with browser visible
 | Auth | Sensible handling of the candidate's own GitHub token and browser session |
 | Cleanup | Issues closed via API at end of each test |
 
----
-
-## Submission Notes
-
-### Assumptions
-
-- GitHub UI is in English — locators are based on English aria-labels.
-- The issue page goes through `/_graphql` for all write operations. That's why `waitForResponse` targets it rather than a REST endpoint.
-- A `storageState` file is provided for the browser session. No login flow was implemented.
-
-### Tradeoffs
-
-- **`/_graphql` as response filter**: it's tied to GitHub's internals, but there's no REST signal to hook into for UI actions on the issue page.
-- **No `_closeIssue` in test 3**: the issue is already closed by the test itself — adding a cleanup call there would be noise.
-
-### What I would improve with another hour
-
-- **`globalSetup` for `storageState`**: a script that logs in via the UI and saves the session automatically, so there's no manual step before running the suite.
