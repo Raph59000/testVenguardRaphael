@@ -16,7 +16,7 @@ test('after creating an issue via UI, it should be visible in the UI', async ({ 
     await page.getByRole('textbox', { name: 'Markdown value' }).fill(`Playwright body ${suffix}`)
 
     await Promise.all([
-      page.waitForResponse(r => r.url().includes('/_graphql') && r.request().method() === 'POST' && r.status() === 200),
+      page.waitForResponse(response => response.url().includes('/_graphql') && response.request().method() === 'POST' && response.status() === 200),
       page.getByRole('main').getByRole('button', { name: 'Create' }).click(),
     ])
 
@@ -56,14 +56,18 @@ test('after creating an issue via API, edit it and assert via API', async ({ req
   await test.step('edit title and body via UI', async () => {
     await page.getByRole('button', { name: 'Edit issue title' }).click()
     await page.getByRole('textbox', { name: 'Title input' }).fill(newTitle)
-    await page.getByRole('button', { name: 'Save ( enter )' }).click()
+    
+    await Promise.all([
+      page.waitForResponse(response => response.url().includes('/_graphql') && response.request().method() === 'POST' && response.status() === 200),
+      page.getByRole('button', { name: 'Save ( enter )' }).click(),
+    ])
 
     await page.getByRole('button', { name: 'Issue body actions' }).click()
     await page.getByRole('menuitem', { name: 'Edit' }).click()
     await page.getByRole('textbox', { name: 'Markdown value' }).fill(newBody)
 
     await Promise.all([
-      page.waitForResponse(r => r.url().includes('/_graphql') && r.request().method() === 'POST' && r.status() === 200),
+      page.waitForResponse(response => response.url().includes('/_graphql') && response.request().method() === 'POST' && response.status() === 200),
       page.getByRole('button', { name: 'Save', exact: true }).click(),
     ])
   })
@@ -91,7 +95,7 @@ test('after creating an issue via API, close it and assert via API', async ({ re
 
   await test.step('close issue via UI', async () => {
     await Promise.all([
-      page.waitForResponse(r => r.url().includes('/_graphql') && r.request().method() === 'POST' && r.status() === 200),
+      page.waitForResponse(response => response.url().includes('/_graphql') && response.request().method() === 'POST' && response.status() === 200),
       page.getByRole('button', { name: 'Close issue' }).click(),
     ])
   })
