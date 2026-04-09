@@ -1,6 +1,8 @@
 const { expect } = require('@playwright/test')
 const hlpPW = require('../pw/helpers.js')
 
+const GITHUB_API_BASE = 'https://api.github.com/repos'
+
 // These helpers intentionally target the candidate's own temporary GitHub repository.
 function getRequiredEnv(name) {
   const value = process.env[name]
@@ -38,7 +40,7 @@ async function _getIssueCreated(request, data = {}) {
   const { owner, repo } = getRepoContext()
   const payload = await _getIssuePayload(data)
   const response = await request.post(
-    `https://api.github.com/repos/${owner}/${repo}/issues`,
+    `${GITHUB_API_BASE}/${owner}/${repo}/issues`,
     { headers: getAuthHeaders(), data: payload }
   )
   expect(response.ok()).toBeTruthy()
@@ -48,7 +50,7 @@ async function _getIssueCreated(request, data = {}) {
 async function _getIssueData(request, issueNumber) {
   const { owner, repo } = getRepoContext()
   const response = await request.get(
-    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
+    `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}`,
     { headers: getAuthHeaders() }
   )
   expect(response.ok()).toBeTruthy()
@@ -58,7 +60,7 @@ async function _getIssueData(request, issueNumber) {
 async function _updateIssue(request, issueNumber, data) {
   const { owner, repo } = getRepoContext()
   const response = await request.patch(
-    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
+    `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}`,
     { headers: getAuthHeaders(), data }
   )
   expect(response.ok()).toBeTruthy()
@@ -68,7 +70,7 @@ async function _updateIssue(request, issueNumber, data) {
 async function _getIssueComments(request, issueNumber) {
   const { owner, repo } = getRepoContext()
   const response = await request.get(
-    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+    `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}/comments`,
     { headers: getAuthHeaders() }
   )
   expect(response.ok()).toBeTruthy()
@@ -78,7 +80,7 @@ async function _getIssueComments(request, issueNumber) {
 async function _addIssueComment(request, issueNumber, body) {
   const { owner, repo } = getRepoContext()
   const response = await request.post(
-    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+    `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}/comments`,
     { headers: getAuthHeaders(), data: { body } }
   )
   expect(response.ok()).toBeTruthy()
@@ -88,7 +90,7 @@ async function _addIssueComment(request, issueNumber, body) {
 async function _closeIssue(request, issueNumber) {
   const { owner, repo } = getRepoContext()
   const response = await request.patch(
-    `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
+    `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}`,
     { headers: getAuthHeaders(), data: { state: 'closed' } }
   )
   expect(response.ok()).toBeTruthy()
