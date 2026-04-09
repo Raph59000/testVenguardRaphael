@@ -6,7 +6,11 @@
 
 - GitHub UI is in English — locators are based on English aria-labels.
 - The issue page goes through `/_graphql` for all write operations. That's why `waitForResponse` targets it rather than a REST endpoint.
-- A `storageState` file is provided for the browser session. No login flow was implemented.
+- A `storageState` file is required for the browser session. No automated login flow was implemented. To generate one, run the following command, log in to GitHub in the browser that opens, then close it:
+  ```bash
+  npx playwright codegen --save-storage=storage-state.json https://github.com/login
+  ```
+  Then set `GITHUB_STORAGE_STATE=./storage-state.json` in your `.env`.
 
 ### Tradeoffs
 
