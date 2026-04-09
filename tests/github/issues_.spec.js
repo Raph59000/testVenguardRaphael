@@ -8,7 +8,7 @@ test('after creating an issue via UI, it should be visible in the UI', async ({ 
   const title = `Playwright issue ${suffix}`
 
   await test.step('navigate to new issue form', async () => {
-    await page.goto(`https://github.com/${owner}/${repo}/issues/new`)
+    await page.goto(`/${owner}/${repo}/issues/new`)
   })
 
   await test.step('fill and submit the form', async () => {
@@ -50,7 +50,7 @@ test('after creating an issue via API, edit it and assert via API', async ({ req
   })
 
   await test.step('navigate to issue page', async () => {
-    await page.goto(`https://github.com/${owner}/${repo}/issues/${issue.number}`)
+    await page.goto(`/${owner}/${repo}/issues/${issue.number}`)
   })
 
   await test.step('edit title and body via UI', async () => {
@@ -86,7 +86,7 @@ test('after creating an issue via API, close it and assert via API', async ({ re
   ids.set({ issue_number: issue.number })
 
   await test.step('navigate to issue page', async () => {
-    await page.goto(`https://github.com/${owner}/${repo}/issues/${issue.number}`)
+    await page.goto(`/${owner}/${repo}/issues/${issue.number}`)
   })
 
   await test.step('close issue via UI', async () => {
