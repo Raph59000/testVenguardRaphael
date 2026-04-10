@@ -43,7 +43,7 @@ async function _getIssueCreated(request, data = {}) {
     `${GITHUB_API_BASE}/${owner}/${repo}/issues`,
     { headers: getAuthHeaders(), data: payload }
   )
-  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(201)
   return response.json()
 }
 
@@ -53,7 +53,7 @@ async function _getIssueData(request, issueNumber) {
     `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}`,
     { headers: getAuthHeaders() }
   )
-  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(200)
   return response.json()
 }
 
@@ -63,7 +63,7 @@ async function _updateIssue(request, issueNumber, data) {
     `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}`,
     { headers: getAuthHeaders(), data }
   )
-  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(200)
   return response.json()
 }
 
@@ -73,7 +73,7 @@ async function _getIssueComments(request, issueNumber) {
     `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}/comments`,
     { headers: getAuthHeaders() }
   )
-  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(200)
   return response.json()
 }
 
@@ -83,7 +83,7 @@ async function _addIssueComment(request, issueNumber, body) {
     `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}/comments`,
     { headers: getAuthHeaders(), data: { body } }
   )
-  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(201)
   return response.json()
 }
 
@@ -93,7 +93,7 @@ async function _closeIssue(request, issueNumber) {
     `${GITHUB_API_BASE}/${owner}/${repo}/issues/${issueNumber}`,
     { headers: getAuthHeaders(), data: { state: 'closed' } }
   )
-  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(200)
   return response.json()
 }
 
