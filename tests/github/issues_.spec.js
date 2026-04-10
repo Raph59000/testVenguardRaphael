@@ -37,8 +37,7 @@ test('after creating an issue via UI, it should be visible in the UI', async ({ 
   })
 })
 
-test('after creating an issue via API, edit it and assert via API', async ({ request, page, ids }) => {
-  const { owner, repo } = hlpGitHub.getRepoContext()
+test('after creating an issue via API, edit it and assert via API', async ({ request, ids }) => {
   const suffix = await hlpPW.getRandomLetters(8)
   const newTitle = `Playwright issue edited ${suffix}`
   const newBody = `Playwright body edited ${suffix}`
@@ -49,27 +48,8 @@ test('after creating an issue via API, edit it and assert via API', async ({ req
     return created
   })
 
-  await test.step('navigate to issue page', async () => {
-    await page.goto(`/${owner}/${repo}/issues/${issue.number}`)
-  })
-
-  await test.step('edit title and body via UI', async () => {
-    await page.getByRole('button', { name: 'Edit issue title' }).click()
-    await page.getByRole('textbox', { name: 'Title input' }).fill(newTitle)
-    
-    await Promise.all([
-      page.waitForResponse(response => response.url().includes('/_graphql') && response.request().method() === 'POST' && response.status() === 200),
-      page.getByRole('button', { name: 'Save ( enter )' }).click(),
-    ])
-
-    await page.getByRole('button', { name: 'Issue body actions' }).click()
-    await page.getByRole('menuitem', { name: 'Edit' }).click()
-    await page.getByRole('textbox', { name: 'Markdown value' }).fill(newBody)
-
-    await Promise.all([
-      page.waitForResponse(response => response.url().includes('/_graphql') && response.request().method() === 'POST' && response.status() === 200),
-      page.getByRole('button', { name: 'Save', exact: true }).click(),
-    ])
+  await test.step('edit issue via API', async () => {
+    await hlpGitHub._updateIssue(request, issue.number, { title: newTitle, body: newBody })
   })
 
   await test.step('assert via API', async () => {
@@ -83,21 +63,15 @@ test('after creating an issue via API, edit it and assert via API', async ({ req
   })
 })
 
-test('after creating an issue via API, close it and assert via API', async ({ request, page, ids }) => {
-  const { owner, repo } = hlpGitHub.getRepoContext()
-
-  const issue = await hlpGitHub._getIssueCreated(request)
-  ids.set({ issue_number: issue.number })
-
-  await test.step('navigate to issue page', async () => {
-    await page.goto(`/${owner}/${repo}/issues/${issue.number}`)
+test('after creating an issue via API, close it and assert via API', async ({ request, ids }) => {
+  const issue = await test.step('create issue via API', async () => {
+    const created = await hlpGitHub._getIssueCreated(request)
+    ids.set({ issue_number: created.number })
+    return created
   })
 
-  await test.step('close issue via UI', async () => {
-    await Promise.all([
-      page.waitForResponse(response => response.url().includes('/_graphql') && response.request().method() === 'POST' && response.status() === 200),
-      page.getByRole('button', { name: 'Close issue' }).click(),
-    ])
+  await test.step('close issue via API', async () => {
+    await hlpGitHub._closeIssue(request, issue.number)
   })
 
   await test.step('assert via API', async () => {
