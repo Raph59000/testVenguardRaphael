@@ -34,3 +34,4 @@ This exercise was completed using **Claude Code** as a pair-programming assistan
 ### What I would improve with another hour
 
 - **`globalSetup` for `storageState`**: a script that logs in via the UI and saves the session automatically, so there's no manual step before running the suite.
+- **Temporal assertions via `dayjs`**: `plugins/index.js` (provided in the base project) configures `dayjs` with `utc`, `timezone`, `isBetween`, and other plugins — but was never used. Given more time, I would have added assertions on the date fields returned by the API (`created_at`, `updated_at`, `closed_at`) — for example verifying that `closed_at` is after `created_at`, or that `updated_at` actually changed after an edit.
